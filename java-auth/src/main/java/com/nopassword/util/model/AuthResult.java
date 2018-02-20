@@ -9,25 +9,31 @@ public class AuthResult {
 
     @JsonProperty("Username")
     private String username;
-    
+
     @JsonProperty("WebAddress")
     private String webAddress;
-    
+
     @JsonProperty("Enc")
     private String enc;
-    
+
+    @JsonProperty("EncCert")
+    private String encCert;
+
     @JsonProperty("LogGUID")
     private String logGUID;
-    
-    @JsonProperty("SSOAddress")
-    private String ssoAddress;
+
+    @JsonProperty("SSOUrl")
+    private String ssoURL;
+
+    @JsonProperty("SSOToken")
+    private String ssoToken;
 
     public String getSsoAddress() {
-        return ssoAddress;
+        return ssoURL;
     }
 
     public void setSsoAddress(String ssoAddress) {
-        this.ssoAddress = ssoAddress;
+        this.ssoURL = ssoAddress;
     }
 
     public String getEnc() {
@@ -70,15 +76,40 @@ public class AuthResult {
         this.webAddress = webAddress;
     }
 
+    public String getEncCert() {
+        return encCert;
+    }
+
+    public void setEncCert(String encCert) {
+        this.encCert = encCert;
+    }
+
+    public String getSsoURL() {
+        return ssoURL;
+    }
+
+    public void setSsoURL(String ssoURL) {
+        this.ssoURL = ssoURL;
+    }
+
+    public String getSsoToken() {
+        return ssoToken;
+    }
+
+    public void setSsoToken(String ssoToken) {
+        this.ssoToken = ssoToken;
+    }
+
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append("AuthResult{authStatus=").append(authStatus)
-                .append(", username=").append(username)
-                .append(", webAddress=").append(webAddress)
-                .append(", enc=").append(enc)
-                .append(", logGUID=")
-                .append(logGUID).append("}").toString();
+        return "AuthResult{" + "authStatus=" + authStatus 
+                + ", username=" + username 
+                + ", webAddress=" + webAddress 
+                + ", enc=" + enc 
+                + ", encCert=" + encCert 
+                + ", logGUID=" + logGUID 
+                + ", ssoURL=" + ssoURL 
+                + ", ssoToken=" + ssoToken + '}';
     }
 
 }

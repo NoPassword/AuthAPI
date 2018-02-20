@@ -2,7 +2,7 @@ package com.nopassword.util.model;
 
 public class Message {
 
-    private static String APIKey = "6bbfbdc5-2797-4d7a-a572-1e6616e70088";
+    private String APIKey;
     private String Username;
     private static String Command = "UserStatus";
     private String IPAddress;
@@ -115,13 +115,14 @@ public class Message {
 
     @Override
     public String toString() {
-        return "Message{ Username=" + Username
+        return "Message{ APIKey=<omited>"
+                + ", Username=" + Username
                 + ", Command=" + Command + ", IPAddress=" + IPAddress
                 + ", DeviceOS=" + DeviceOS + ", BrowserApp=" + BrowserApp
                 + ", DeviceName=" + DeviceName + ", Display=" + Display
                 + ", WebAddress=" + WebAddress
-                + ", Password=<omited for safety>"
-                + ", SecretKey=<omited for safety>}";
+                + ", Password=<omited>"
+                + ", SecretKey=<omited>}";
     }
 
 }

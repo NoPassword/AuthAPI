@@ -43,7 +43,7 @@ public class OAuthService {
     @PostConstruct
     public void init() throws IOException {
         Properties properites = new Properties();
-        properites.load(getClass().getResourceAsStream("/oauth2.properties"));
+        properites.load(getClass().getResourceAsStream("/config.properties"));
         CLIENT_ID = properites.getProperty("client_id");
         CLIENT_SECRET = properites.getProperty("client_secret");
         CALLBACK_URL = properites.getProperty("callback_url");
