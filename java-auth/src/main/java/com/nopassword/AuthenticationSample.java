@@ -8,10 +8,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Scanner;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -25,13 +30,28 @@ public class AuthenticationSample {
     public static String AUTH_SERVICE_URL;
 
     public static void main(String[] args) throws SocketException, IOException {
+        if (args == null || args.length == 0
+                || (!"java".equals(args[0]) && !"spring".equals(args[0]))) {
+            System.out.println("Usage: java -jar np-auth-sample-1.0.jar java|spring");
+            return;
+        }
         Properties properties = new Properties();
         properties.load(AuthenticationSample.class.getResourceAsStream("/config.properties"));
         AUTH_SERVICE_URL = properties.getProperty("nopassword_auth_url");
-        Message message = new Message("john.smith@example.com", "8.8.8.8");
+        String clientIP = getLocalHostLANAddress().getHostAddress();
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("User name: ");
+        String username = scanner.nextLine();
+        Message message = new Message(username, clientIP);
         message.setAPIKey(properties.getProperty("generic_api_key"));
-        System.out.println("User authenticated with Java: " + AuthenticationSample.authenticateUser(message));
-        System.out.println("User authenticated with Spring: " + AuthenticationSample.authenticateUserWithSpring(message));
+
+        if ("java".equals(args[0])) {
+            System.out.println("User authenticated with Java: "
+                    + AuthenticationSample.authenticateUser(message));
+        } else if ("spring".equals(args[0])) {
+            System.out.println("User authenticated with Spring: "
+                    + AuthenticationSample.authenticateUserWithSpring(message));
+        }
     }
 
     /**
@@ -47,7 +67,7 @@ public class AuthenticationSample {
         if (!SUCCESS.equals(result.getAuthStatus())) {
             System.out.println(result.getAuthStatus());
         }
-        
+
         return SUCCESS.equals(result.getAuthStatus());
     }
 
@@ -60,11 +80,11 @@ public class AuthenticationSample {
     public static boolean authenticateUserWithSpring(Message msg) {
         RestTemplate rt = new RestTemplate();
         AuthResult result = rt.postForObject(AUTH_SERVICE_URL, msg, AuthResult.class);
-        
+
         if (!SUCCESS.equals(result.getAuthStatus())) {
             System.out.println(result.getAuthStatus());
         }
-        
+
         return SUCCESS.equalsIgnoreCase(result.getAuthStatus());
     }
 
@@ -73,7 +93,7 @@ public class AuthenticationSample {
      *
      * @param <T>
      * @param url URL
-     * @param o Data to be posted
+     * @param o Data
      * @param resultType Class
      * @return
      * @throws MalformedURLException
@@ -105,6 +125,58 @@ public class AuthenticationSample {
 
         conn.disconnect();
         return mapper.readValue(input.toString(), resultType);
+    }
+
+    /**
+     * This method will scan all IP addresses on all network interfaces on the
+     * host machine to determine the IP address most likely to be the machine's
+     * LAN address.
+     *
+     * @return
+     * @throws UnknownHostException
+     */
+    public static InetAddress getLocalHostLANAddress() throws UnknownHostException {
+        try {
+            InetAddress candidateAddress = null;
+            // Iterate all NICs (network interface cards)...
+            for (Enumeration ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements();) {
+                NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
+                // Iterate all IP addresses assigned to each card...
+                for (Enumeration inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
+                    InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+                    if (!inetAddr.isLoopbackAddress()) {
+                        if (inetAddr.isSiteLocalAddress()) {
+                            // Found non-loopback site-local address. Return it immediately...
+                            return inetAddr;
+                        } else if (candidateAddress == null) {
+                            // Found non-loopback address, but not necessarily site-local.
+                            // Store it as a candidate to be returned if site-local address is not subsequently found...
+                            candidateAddress = inetAddr;
+                            // Note that we don't repeatedly assign non-loopback non-site-local addresses as candidates,
+                            // only the first. For subsequent iterations, candidate will be non-null.
+                        }
+                    }
+                }
+            }
+            if (candidateAddress != null) {
+                // We did not find a site-local address, but we found some other non-loopback address.
+                // Server might have a non-site-local address assigned to its NIC (or it might be running
+                // IPv6 which deprecates the "site-local" concept).
+                // Return this non-loopback candidate address...
+                return candidateAddress;
+            }
+            // At this point, we did not find a non-loopback address.
+            // Fall back to returning whatever InetAddress.getLocalHost() returns...
+            InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
+            if (jdkSuppliedAddress == null) {
+                throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
+            }
+            return jdkSuppliedAddress;
+        } catch (IOException e) {
+            UnknownHostException unknownHostException = new UnknownHostException("Failed to determine LAN address: " + e);
+            unknownHostException.initCause(e);
+            throw unknownHostException;
+        }
     }
 
 }

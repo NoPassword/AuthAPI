@@ -51,7 +51,7 @@ public class OAuthService {
 
     /**
      * Forwards authentication request to NoPassword
-     * https://localhost:8443/authorize?state=anystate
+     * 
      * @param state
      * @return
      */
