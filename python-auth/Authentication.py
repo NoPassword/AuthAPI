@@ -6,6 +6,7 @@ import requests
 
 class Authentication(object):
     APPLICATION_JSON = "application/json"
+    SUCCESS = "Success"
 
     def __init__(self):
         config = configparser.RawConfigParser()
@@ -28,4 +29,8 @@ class Authentication(object):
         }
         response = requests.post(self.NOPASSWORD_AUTH_URL, json.dumps(message), headers=self.HEADERS)
         result = response.json()
-        return result["AuthStatus"]
+
+        if result["AuthStatus"] != self.SUCCESS:
+            print(result["AuthStatus"])
+
+        return result["AuthStatus"] == self.SUCCESS
