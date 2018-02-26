@@ -1,8 +1,8 @@
 package com.nopassword;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nopassword.util.model.AuthResult;
-import com.nopassword.util.model.Message;
+import com.nopassword.common.model.AuthResult;
+import com.nopassword.common.model.Message;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,11 +39,11 @@ public class AuthenticationSample {
         properties.load(AuthenticationSample.class.getResourceAsStream("/config.properties"));
         AUTH_SERVICE_URL = properties.getProperty("nopassword_auth_url");
         String clientIP = getLocalHostLANAddress().getHostAddress();
+        String apiKey = properties.getProperty("generic_api_key");
         Scanner scanner = new Scanner(System.in);
         System.out.print("User name: ");
         String username = scanner.nextLine();
-        Message message = new Message(username, clientIP);
-        message.setAPIKey(properties.getProperty("generic_api_key"));
+        Message message = new Message(apiKey, username, clientIP);
 
         if ("java".equals(args[0])) {
             System.out.println("User authenticated with Java: "
