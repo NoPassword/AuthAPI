@@ -33,10 +33,10 @@ public class AuthenticationSample {
     private static String CHECK_LOGIN_TOKEN_URL;
     private static String CHECK_ENC_LOGIN_TOKEN_URL;
 
-    private static String NOPASSWORD_LOGIN_KEY;
-    private static String USERNAME;
-    private static String AES_KEY;
-    private static String AES_IV;
+    private static final String NOPASSWORD_LOGIN_KEY = "Your NoPassword Login key here";
+    private static final String USERNAME = "Your user name here";
+    private static final String AES_KEY = "Your AES key here";
+    private static final String AES_IV = "Your AES IV here";
 
     @BeforeClass
     public static void NoPasswordTest() {
@@ -59,11 +59,6 @@ public class AuthenticationSample {
         ASYNC_ENC_AUTH_URL = PROPERTIES.getProperty("async_enc_auth_url");
         CHECK_LOGIN_TOKEN_URL = PROPERTIES.getProperty("check_login_token_url");
         CHECK_ENC_LOGIN_TOKEN_URL = PROPERTIES.getProperty("check_login_enc_login_token");
-
-        NOPASSWORD_LOGIN_KEY = PROPERTIES.getProperty("nopassword_login_key");
-        USERNAME = PROPERTIES.getProperty("username");
-        AES_KEY = PROPERTIES.getProperty("aes_key");
-        AES_IV = PROPERTIES.getProperty("aes_iv");
     }
 
     @Test
