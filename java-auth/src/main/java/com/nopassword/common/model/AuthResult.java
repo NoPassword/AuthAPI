@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AuthResult {
 
     @JsonProperty("AuthStatus")
-    private AuthStatus authStatus;
+    private String authStatus;
 
     @JsonProperty("Username")
     private String username;
@@ -49,9 +49,6 @@ public class AuthResult {
 
     @JsonProperty("AutoCreateAccountToken")
     private String autoCreateAccountToken;
-
-    @JsonProperty("Payload")
-    private String payload;
 
     /**
      * Gets SSO address
@@ -112,7 +109,7 @@ public class AuthResult {
      *
      * @return Status
      */
-    public AuthStatus getAuthStatus() {
+    public String getAuthStatus() {
         return authStatus;
     }
 
@@ -121,7 +118,7 @@ public class AuthResult {
      *
      * @param authStatus Status
      */
-    public void setAuthStatus(AuthStatus authStatus) {
+    public void setAuthStatus(String authStatus) {
         this.authStatus = authStatus;
     }
 
@@ -217,14 +214,6 @@ public class AuthResult {
         this.autoCreateAccountToken = autoCreateAccountToken;
     }
 
-    public String getPayload() {
-        return payload;
-    }
-
-    public void setPayload(String payload) {
-        this.payload = payload;
-    }
-
     @Override
     public String toString() {
         return "AuthResult{" + "authStatus=" + authStatus
@@ -239,8 +228,7 @@ public class AuthResult {
                 + ", asyncLoginToken=" + asyncLoginToken
                 + ", publicCert=" + publicCert
                 + ", signedChallenge=" + signedChallenge
-                + ", autoCreateAccountToken=" + autoCreateAccountToken
-                + ", payload=" + payload + '}';
+                + ", autoCreateAccountToken=" + autoCreateAccountToken + '}';
     }
 
 }

@@ -1,12 +1,13 @@
 package com.nopassword.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  *
  * @author NoPassword
  */
-public class AuthResponse {
+public class GenericResponse {
 
     @JsonProperty("Succeeded")
     private boolean succeeded;
@@ -15,13 +16,13 @@ public class AuthResponse {
     private String message;
 
     @JsonProperty("Value")
-    private AuthResult authResult;
+    private JsonNode value;
 
-    public boolean isSucceeded() {
+    public boolean succeeded() {
         return succeeded;
     }
 
-    public void setSucceeded(boolean Succeeded) {
+    public void succeeded(boolean Succeeded) {
         this.succeeded = Succeeded;
     }
 
@@ -33,12 +34,12 @@ public class AuthResponse {
         this.message = message;
     }
 
-    public AuthResult getAuthResult() {
-        return authResult;
+    public JsonNode getValue() {
+        return value;
     }
 
-    public void setAuthResult(AuthResult authResult) {
-        this.authResult = authResult;
+    public void setValue(JsonNode value) {
+        this.value = value;
     }
 
 }

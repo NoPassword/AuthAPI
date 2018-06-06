@@ -10,7 +10,6 @@ import java.util.Objects;
  *
  * @author NoPassword
  */
-//TODO - check keys
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthRequest {
     
@@ -21,7 +20,7 @@ public class AuthRequest {
     private String username;
 
     @JsonProperty("Command")
-    private String command = "UserStatus";
+    private String command;// = "UserStatus";
 
     @JsonProperty("IPAddress")
     private String ipAddress;

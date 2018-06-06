@@ -1,23 +1,23 @@
 package com.nopassword.common.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nopassword.common.crypto.NPCipher;
+import com.nopassword.common.crypto.RSACipher;
 import com.nopassword.common.utils.Utils;
-import org.mindrot.jbcrypt.BCrypt;
+import java.util.Base64;
 
 /**
  *
  * @author NoPassword
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public final class EncryptedAuthRequest {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public final class GenericRequest {
 
     @JsonIgnore
-    private final NPCipher cipher;
+    private final RSACipher rsaCipher;
 
     @JsonProperty("Payload")
     private String payload;
@@ -25,14 +25,11 @@ public final class EncryptedAuthRequest {
     @JsonProperty("Timestamp")
     private final String timestamp;
 
-    @JsonProperty("Encrypted")
-    private boolean encrypted;
-
-    @JsonProperty("NoSignature")
-    private boolean noSignature;
-
     @JsonProperty("Signature")
     private String signature;
+
+    @JsonProperty("Key")
+    private String key;
 
     @JsonIgnore
     private String plainPayload;
@@ -40,16 +37,31 @@ public final class EncryptedAuthRequest {
     /**
      * Encrypted authentication request to NoPassword API
      *
+     * @param key NoPassword Generic API key.
      * @param request Authentication request. This request is parsed as a JSON
      * and encrypted with the provided cipher.
-     * @param cipher Cipher used to encrypt the authentication request
      * @throws com.fasterxml.jackson.core.JsonProcessingException
      */
-    public EncryptedAuthRequest(Object request, NPCipher cipher) throws JsonProcessingException {
+    public GenericRequest(String key, Object request) throws JsonProcessingException {
         this.timestamp = Utils.currentTime();
-        this.encrypted = true;
-        this.noSignature = true;
-        this.cipher = cipher;
+        this.key = key;
+        this.rsaCipher = null;
+        setPayload(request);
+    }
+
+    /**
+     * Encrypted authentication request to NoPassword API
+     *
+     * @param key NoPassword Generic API key.
+     * @param request Authentication request. This request is parsed as a JSON
+     * and encrypted with the provided cipher.
+     * @param cipher Cipher used to encrypt the authentication request.
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     */
+    public GenericRequest(String key, Object request, RSACipher cipher) throws JsonProcessingException {
+        this.rsaCipher = cipher;
+        this.timestamp = Utils.currentTime();
+        this.key = key;
         setPayload(request);
     }
 
@@ -60,8 +72,8 @@ public final class EncryptedAuthRequest {
     public void setPayload(Object request) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         this.plainPayload = mapper.writeValueAsString(request);
-        setSignature(plainPayload);
-        this.payload = cipher.encrypt(plainPayload);
+        this.payload = new String(Base64.getEncoder().encode(plainPayload.getBytes()));
+        setSignature(this.payload);
     }
 
     /**
@@ -71,22 +83,6 @@ public final class EncryptedAuthRequest {
      */
     public String getTimestamp() {
         return timestamp;
-    }
-
-    public boolean isEncrypted() {
-        return encrypted;
-    }
-
-    public void setEncrypted(boolean encrypted) {
-        this.encrypted = encrypted;
-    }
-
-    public boolean isNoSignature() {
-        return noSignature;
-    }
-
-    public void setNoSignature(boolean noSignature) {
-        this.noSignature = noSignature;
     }
 
     public String getSignature() {
@@ -99,8 +95,17 @@ public final class EncryptedAuthRequest {
      * @param signature JSON authentication request
      */
     private void setSignature(String signature) {
-        String salt = BCrypt.gensalt();
-        this.signature = BCrypt.hashpw(signature, salt);
+        if (rsaCipher != null) {
+            this.signature = rsaCipher.sign(timestamp + signature);
+        }
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     /**
@@ -109,13 +114,12 @@ public final class EncryptedAuthRequest {
     @Override
     public String toString() {
         return "EncryptedAuthRequest{"
-                + "cipher=" + cipher
+                + "cipher=" + rsaCipher
                 + ", payload=" + payload
                 + ", timestamp=" + timestamp
-                + ", encrypted=" + encrypted
-                + ", noSignature=" + noSignature
                 + ", signature=" + signature
-                + ", plainPayload=" + plainPayload + '}';
+                + ", plainPayload=" + plainPayload
+                + ", key=" + (key == null ? null : "<omited for safety>") + '}';
     }
 
 }
