@@ -86,7 +86,7 @@ public class AuthenticationSample extends NoPasswordTest {
         //asynchronous authentication
         asyncAuthentication(authRequest);
 
-        //switch to generic api key
+        //switch to generic api key for encrypted endpoints
         authRequest.setApiKey(GENERIC_API_KEY);
         
         //synchronous encrypted authentication
