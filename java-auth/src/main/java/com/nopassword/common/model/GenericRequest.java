@@ -35,7 +35,7 @@ public final class GenericRequest {
     private String plainPayload;
 
     /**
-     * Encrypted authentication request to NoPassword API
+     * Plain generic request to NoPassword API
      *
      * @param key NoPassword Generic API key.
      * @param request Authentication request. This request is parsed as a JSON
@@ -50,7 +50,7 @@ public final class GenericRequest {
     }
 
     /**
-     * Encrypted authentication request to NoPassword API
+     * Encrypted generic request to NoPassword API
      *
      * @param key NoPassword Generic API key.
      * @param request Authentication request. This request is parsed as a JSON
