@@ -30,7 +30,7 @@ class Authentication(object):
         response = requests.post(self.NOPASSWORD_AUTH_URL, json.dumps(message), headers=self.HEADERS)
         result = response.json()
 
-        if result["AuthStatus"] != self.SUCCESS:
-            print(result["AuthStatus"])
+        if result["Value"]["AuthStatus"] != self.SUCCESS:
+            print(result["Value"]["AuthStatus"])
 
-        return result["AuthStatus"] == self.SUCCESS
+        return result["Value"]["AuthStatus"] == self.SUCCESS
