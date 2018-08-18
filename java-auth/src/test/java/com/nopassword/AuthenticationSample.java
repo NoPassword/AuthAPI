@@ -44,12 +44,12 @@ public class AuthenticationSample extends NoPasswordTest {
      * API key for encrypted endpoints.
      */
     private static String GENERIC_API_KEY;
-    
+
     /**
      * API key for plain endpoints.
      */
     private static String NOPASSWORD_LOGIN_KEY;
-    
+
     private static final String USERNAME = "YOUR USER NAME HERE";
 
     @BeforeClass
@@ -79,7 +79,7 @@ public class AuthenticationSample extends NoPasswordTest {
         AuthRequest authRequest = new AuthRequest(NOPASSWORD_LOGIN_KEY, USERNAME, "10.0.0.1");
         authRequest.setDeviceName("Java Sample");
         authRequest.setBrowserId(UUID.randomUUID().toString());
-        
+
         //synchronous authentication
 //        authentication(authRequest);
 
@@ -88,10 +88,10 @@ public class AuthenticationSample extends NoPasswordTest {
 
         //switch to generic api key for encrypted endpoints
         authRequest.setApiKey(GENERIC_API_KEY);
-        
+
         //synchronous encrypted authentication
 //        encyptedAuthentication(authRequest);
-        
+
         //asynchronous encrypted authentication
 //        asyncEncryptedAuthentication(authRequest);
     }
@@ -120,7 +120,7 @@ public class AuthenticationSample extends NoPasswordTest {
         AuthResult result = Authentication.authenticateUser(ASYNC_AUTH_URL, authRequest);
         String authStatus = result.getAuthStatus();
 
-        while (AuthStatus.WAITING_FOR_RESPPONSE.equals(authStatus)) {
+        while (AuthStatus.WAITING_FOR_RESPONSE.equals(authStatus)) {
             try {
                 Thread.sleep(3000);
                 LOG.info("waiting for response...");
@@ -173,7 +173,7 @@ public class AuthenticationSample extends NoPasswordTest {
             AuthResult result = Authentication.authenticateUserEncrypted(ASYNC_ENC_AUTH_URL, authRequest, rsaCipher);
             String authStatus = result.getAuthStatus();
 
-            while (AuthStatus.WAITING_FOR_RESPPONSE.equals(authStatus)) {
+            while (AuthStatus.WAITING_FOR_RESPONSE.equals(authStatus)) {
                 Thread.sleep(3000);
                 LOG.info("waiting for response...");
                 authStatus = Authentication.checkEncLoginToken(

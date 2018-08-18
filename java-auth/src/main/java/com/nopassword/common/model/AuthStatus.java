@@ -19,9 +19,9 @@ public class AuthStatus {
     public static final String NO_LOCATION = "No Location";
     public static final String NO_RESPONSE = "NoResponse";
     public static final String NO_RESPONSE_TIMEOUT = "NoResponseTimeout";
-    public static final String PASWWORD = "Password";
+    public static final String PASSWORD = "Password";
     public static final String SUCCESS = "Success";
     public static final String UNPAIRED_USER = "UnpairedUser";
-    public static final String WAITING_FOR_RESPPONSE = "WaitingForResponse";
+    public static final String WAITING_FOR_RESPONSE = "WaitingForResponse";
 
 }

@@ -54,9 +54,11 @@ public class GenericResponseHandler {
         JsonNode node = mapper.readTree(payload);
 
         if (node.get(SUCCEEDED).asBoolean()) {
-            return mapper.readValue(node.get(VALUE).toString(), clazz);
+            if (node.has(VALUE)) {
+                return mapper.readValue(node.get(VALUE).toString(), clazz);
+            }
         } else {
-            LOG.error("Error checking authentication result value: " + node.get(MESSAGE).asText());
+            LOG.error("Error checking result: " + node.get(MESSAGE).asText());
         }
         return mapper.readValue(payload, clazz);
     }
