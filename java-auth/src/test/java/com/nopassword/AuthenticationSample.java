@@ -36,8 +36,8 @@ public class AuthenticationSample extends NoPasswordTest {
     private static String ASYNC_AUTH_URL;
     private static String CHECK_LOGIN_TOKEN_URL;
     private static String ENC_AUTH_URL;
-    private static String ASYNC_ENC_AUTH_URL;
-    private static String CHECK_ENC_LOGIN_TOKEN_URL;
+    private static String ENC_ASYNC_AUTH_URL;
+    private static String ENC_CHECK_LOGIN_TOKEN_URL;
     private static final Charset CHARSET = StandardCharsets.UTF_16LE;
 
     /**
@@ -70,8 +70,8 @@ public class AuthenticationSample extends NoPasswordTest {
 
         //encrypted endpoints
         ENC_AUTH_URL = PROPERTIES.getProperty("enc_auth_url");
-        ASYNC_ENC_AUTH_URL = PROPERTIES.getProperty("async_enc_auth_url");
-        CHECK_ENC_LOGIN_TOKEN_URL = PROPERTIES.getProperty("check_enc_login_token_url");
+        ENC_ASYNC_AUTH_URL = PROPERTIES.getProperty("enc_async_auth_url");
+        ENC_CHECK_LOGIN_TOKEN_URL = PROPERTIES.getProperty("enc_check_login_token_url");
     }
 
     @Test
@@ -170,14 +170,14 @@ public class AuthenticationSample extends NoPasswordTest {
             PublicKey publicKey = RSAKeyLoader.loadPublicKey(AuthenticationSample.class.getResource("/public-key.pem").getPath());
             RSACipher rsaCipher = new RSACipher(publicKey, privateKey, CHARSET);
 
-            AuthResult result = Authentication.authenticateUserEncrypted(ASYNC_ENC_AUTH_URL, authRequest, rsaCipher);
+            AuthResult result = Authentication.authenticateUserEncrypted(ENC_ASYNC_AUTH_URL, authRequest, rsaCipher);
             String authStatus = result.getAuthStatus();
 
             while (AuthStatus.WAITING_FOR_RESPONSE.equals(authStatus)) {
                 Thread.sleep(3000);
                 LOG.info("waiting for response...");
                 authStatus = Authentication.checkEncLoginToken(
-                        CHECK_ENC_LOGIN_TOKEN_URL, authRequest.getApiKey(),
+                        ENC_CHECK_LOGIN_TOKEN_URL, authRequest.getApiKey(),
                         result.getAsyncLoginToken(), rsaCipher).getAuthStatus();
             }
             LOG.info("User authenticated: " + AuthStatus.SUCCESS.equals(authStatus));

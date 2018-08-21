@@ -17,5 +17,5 @@ public class Utils {
     public static String currentTime() {
         return ZonedDateTime.now(ZoneOffset.UTC).toString().substring(0, 19).replace("T", " ") + "Z";
     }
-
-}
+    
+    }
