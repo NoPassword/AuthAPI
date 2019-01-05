@@ -69,7 +69,7 @@ public class Authentication {
         if (response.succeeded()) {
             return GenericResponseHandler.parseGenericResponse(response, rsaCipher, AuthResult.class);
         } else {
-            LOG.error("Async encrypted authentication failed: " + response.getMessage());
+            LOG.error("Encrypted authentication failed: " + response.getMessage());
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug(new ObjectMapper().writeValueAsString(encryptedRequest));
@@ -90,8 +90,8 @@ public class Authentication {
      * @throws JsonProcessingException
      */
     public static AuthResult checkEncLoginToken(String url, String apiKey, String loginToken, RSACipher rsaCipher) throws JsonProcessingException, IOException {
-        Map<String, String> map = new HashMap<>();
-        map.put(LOGIN_TOKEN, loginToken);
+//        Map<String, String> map = new HashMap<>();
+//        map.put(LOGIN_TOKEN, loginToken);
         GenericRequest request = new GenericRequest(apiKey, loginToken, rsaCipher);
         RestClient client = new RestClient();
         GenericResponse response = client.post(url, request, GenericResponse.class);

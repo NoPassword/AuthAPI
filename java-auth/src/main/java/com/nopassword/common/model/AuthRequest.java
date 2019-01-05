@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthRequest {
-    
+
     @JsonProperty("APIKey")
     private String apiKey;
 
@@ -40,6 +40,12 @@ public class AuthRequest {
     @JsonProperty("WebAddress")
     private String webAddress;
 
+    @JsonProperty("ClientToken")
+    private String clientToken;
+
+    @JsonProperty("WorkstationId")
+    private String workstationId;
+
     @JsonIgnore
     private String password;
 
@@ -50,24 +56,18 @@ public class AuthRequest {
      * Creates an authentication message request
      *
      * @param username Username
-     * @param password Password
      * @param apiKey Key
-     * @param ipAddress Client IP address
+     * @param ipAddress
      */
-    public AuthRequest(String username, String password, String apiKey, String ipAddress) {
+    public AuthRequest(String username, String apiKey, String ipAddress) {
         this.username = username;
         this.ipAddress = ipAddress;
         this.apiKey = apiKey;
-
-//        if(password != null && password.length() >= 3) {
-//            this.Password = password;
-//        }
     }
 
-    public AuthRequest(String apiKey, String username, String ipAddress) {
+    public AuthRequest(String apiKey, String username) {
         this.apiKey = apiKey;
         this.username = username;
-        this.ipAddress = ipAddress;
     }
 
     /**
@@ -150,7 +150,7 @@ public class AuthRequest {
     public void setDeviceOS(String deviceOS) {
         this.deviceOS = deviceOS;
     }
-    
+
     public String getBrowserId() {
         return browserId;
     }
@@ -235,6 +235,22 @@ public class AuthRequest {
         this.command = command;
     }
 
+    public String getClientToken() {
+        return clientToken;
+    }
+
+    public void setClientToken(String clientToken) {
+        this.clientToken = clientToken;
+    }
+
+    public String getWorkstationId() {
+        return workstationId;
+    }
+
+    public void setWorkstationId(String workstationId) {
+        this.workstationId = workstationId;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -290,7 +306,23 @@ public class AuthRequest {
         }
         return Objects.equals(this.password, other.password);
     }
-    
-    
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.apiKey);
+        hash = 89 * hash + Objects.hashCode(this.username);
+        hash = 89 * hash + Objects.hashCode(this.command);
+        hash = 89 * hash + Objects.hashCode(this.ipAddress);
+        hash = 89 * hash + Objects.hashCode(this.deviceOS);
+        hash = 89 * hash + Objects.hashCode(this.browserId);
+        hash = 89 * hash + Objects.hashCode(this.deviceName);
+        hash = 89 * hash + Objects.hashCode(this.display);
+        hash = 89 * hash + Objects.hashCode(this.webAddress);
+        hash = 89 * hash + Objects.hashCode(this.clientToken);
+        hash = 89 * hash + Objects.hashCode(this.workstationId);
+        hash = 89 * hash + Objects.hashCode(this.password);
+        return hash;
+    }
+
 }

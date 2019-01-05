@@ -18,6 +18,14 @@ public class GenericResponse {
     @JsonProperty("Value")
     private JsonNode value;
 
+    public GenericResponse() {
+    }
+
+    public GenericResponse(boolean succeeded, String message) {
+        this.succeeded = succeeded;
+        this.message = message;
+    }
+
     public boolean succeeded() {
         return succeeded;
     }
@@ -40,6 +48,11 @@ public class GenericResponse {
 
     public void setValue(JsonNode value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "GenericResponse{" + "succeeded=" + succeeded + ", message=" + message + ", value=" + value + '}';
     }
 
 }

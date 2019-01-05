@@ -1,4 +1,4 @@
-package com.nopassword.crypto;
+package com.nopassword.common.crypto;
 
 import com.nopassword.NoPasswordTest;
 import com.nopassword.common.crypto.AESCipher;

@@ -2,9 +2,14 @@ package com.nopassword.common.crypto;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.security.Key;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
@@ -13,13 +18,15 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
+import org.bouncycastle.util.io.pem.PemWriter;
 
 /**
  *
  * @author NoPassword
  */
-public class RSAKeyLoader {
+public class RSAUtils {
 
     static {
         try {
@@ -31,6 +38,10 @@ public class RSAKeyLoader {
         }
     }
 
+    public static PublicKey loadPublicKey(Path filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        return loadPublicKey(filename.toString());
+    }
+
     public static PublicKey loadPublicKey(String filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         PemReader pemReader = new PemReader(new InputStreamReader(new FileInputStream(new File(filename))));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(pemReader.readPemObject().getContent());
@@ -38,11 +49,33 @@ public class RSAKeyLoader {
         return kf.generatePublic(spec);
     }
 
+    public static PrivateKey loadPrivateKey(Path filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+        return loadPrivateKey(filename.toString());
+    }
+
     public static PrivateKey loadPrivateKey(String filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         PemReader pemReader = new PemReader(new InputStreamReader(new FileInputStream(new File(filename))));
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(pemReader.readPemObject().getContent());
         KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
         return kf.generatePrivate(spec);
+    }
+
+    public static KeyPair generateKeyPair(int keySize) throws NoSuchAlgorithmException, NoSuchProviderException {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
+        kpg.initialize(keySize);
+        KeyPair kp = kpg.generateKeyPair();
+        return kp;
+    }
+
+    public static void writePemFile(Key key, Path path) throws IOException {
+        String desc = key instanceof PublicKey
+                ? "PUBLIC KEY"
+                : "RSA PRIVATE KEY";
+
+        try (PemWriter writer = new PemWriter(new FileWriter(path.toFile()))) {
+            PemObject pemObject = new PemObject(desc, key.getEncoded());
+            writer.writeObject(pemObject);
+        }
     }
 
 }

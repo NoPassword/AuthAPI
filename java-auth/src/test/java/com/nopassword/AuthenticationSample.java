@@ -2,7 +2,7 @@ package com.nopassword;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nopassword.common.crypto.RSACipher;
-import com.nopassword.common.crypto.RSAKeyLoader;
+import com.nopassword.common.crypto.RSAUtils;
 import com.nopassword.common.model.AuthRequest;
 import com.nopassword.common.model.AuthResult;
 import com.nopassword.common.model.AuthStatus;
@@ -15,6 +15,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 import java.util.Properties;
 import java.util.UUID;
 import org.junit.Assert;
@@ -50,7 +51,7 @@ public class AuthenticationSample extends NoPasswordTest {
      */
     private static String NOPASSWORD_LOGIN_KEY;
 
-    private static final String USERNAME = "YOUR USER NAME HERE";
+    private static final String USERNAME = "user@client.org";
 
     @BeforeClass
     public static void setup() {
@@ -76,18 +77,18 @@ public class AuthenticationSample extends NoPasswordTest {
 
     @Test
     public void main() throws JsonProcessingException, IOException, Exception {
-        AuthRequest authRequest = new AuthRequest(NOPASSWORD_LOGIN_KEY, USERNAME, "10.0.0.1");
+        AuthRequest authRequest = new AuthRequest(USERNAME, NOPASSWORD_LOGIN_KEY, "10.0.0.1");
         authRequest.setDeviceName("Java Sample");
         authRequest.setBrowserId(UUID.randomUUID().toString());
 
         //synchronous authentication
-//        authentication(authRequest);
+        authentication(authRequest);
 
         //asynchronous authentication
-        asyncAuthentication(authRequest);
+//        asyncAuthentication(authRequest);
 
         //switch to generic api key for encrypted endpoints
-        authRequest.setApiKey(GENERIC_API_KEY);
+//        authRequest.setApiKey(GENERIC_API_KEY);
 
         //synchronous encrypted authentication
 //        encyptedAuthentication(authRequest);
@@ -143,8 +144,8 @@ public class AuthenticationSample extends NoPasswordTest {
     public void encyptedAuthentication(AuthRequest authRequest) {
         LOG.info("Encrypted authentication");
         try {
-            PrivateKey privateKey = RSAKeyLoader.loadPrivateKey(AuthenticationSample.class.getResource("/private-key.pem").getPath());
-            PublicKey publicKey = RSAKeyLoader.loadPublicKey(AuthenticationSample.class.getResource("/public-key.pem").getPath());
+            PrivateKey privateKey = RSAUtils.loadPrivateKey(AuthenticationSample.class.getResource("/private-key.pem").getPath());
+            PublicKey publicKey = RSAUtils.loadPublicKey(AuthenticationSample.class.getResource("/public-key.pem").getPath());
             RSACipher rsaCipher = new RSACipher(publicKey, privateKey, CHARSET);
             AuthResult result = Authentication.authenticateUserEncrypted(ENC_AUTH_URL, authRequest, rsaCipher);
             LOG.info("User authenticated: " + AuthStatus.SUCCESS.equals(result.getAuthStatus()));
@@ -166,25 +167,25 @@ public class AuthenticationSample extends NoPasswordTest {
     public static void asyncEncryptedAuthentication(AuthRequest authRequest) {
         LOG.info("Asynchronous encrypted authentication");
         try {
-            PrivateKey privateKey = RSAKeyLoader.loadPrivateKey(AuthenticationSample.class.getResource("/private-key.pem").getPath());
-            PublicKey publicKey = RSAKeyLoader.loadPublicKey(AuthenticationSample.class.getResource("/public-key.pem").getPath());
+            PrivateKey privateKey = RSAUtils.loadPrivateKey(AuthenticationSample.class.getResource("/private-key.pem").getPath());
+            PublicKey publicKey = RSAUtils.loadPublicKey(AuthenticationSample.class.getResource("/public-key.pem").getPath());
             RSACipher rsaCipher = new RSACipher(publicKey, privateKey, CHARSET);
-
-            AuthResult result = Authentication.authenticateUserEncrypted(ENC_ASYNC_AUTH_URL, authRequest, rsaCipher);
-            String authStatus = result.getAuthStatus();
-
-            while (AuthStatus.WAITING_FOR_RESPONSE.equals(authStatus)) {
-                Thread.sleep(3000);
-                LOG.info("waiting for response...");
-                authStatus = Authentication.checkEncLoginToken(
-                        ENC_CHECK_LOGIN_TOKEN_URL, authRequest.getApiKey(),
-                        result.getAsyncLoginToken(), rsaCipher).getAuthStatus();
-            }
-            LOG.info("User authenticated: " + AuthStatus.SUCCESS.equals(authStatus));
-            LOG.info("Status: " + authStatus);
-            Assert.assertNotEquals(AuthStatus.LOG_ERROR, authStatus);
-        } catch (InterruptedException ex) {
-            LOG.error("Interrupted thread", ex);
+            System.out.println(rsaCipher.decrypt(new String(Base64.getDecoder().decode("ImYwMGFiNzUxLTJkYjEtNDJlOC1hZjljLWRlMjBmZmU2NTJhNCI=".getBytes()))));
+//            AuthResult result = Authentication.authenticateUserEncrypted(ENC_ASYNC_AUTH_URL, authRequest, rsaCipher);
+//            String authStatus = result.getAuthStatus();
+//
+//            while (AuthStatus.WAITING_FOR_RESPONSE.equals(authStatus)) {
+//                Thread.sleep(3000);
+//                LOG.info("waiting for response...");
+//                authStatus = Authentication.checkEncLoginToken(
+//                        ENC_CHECK_LOGIN_TOKEN_URL, authRequest.getApiKey(),
+//                        result.getAsyncLoginToken(), rsaCipher).getAuthStatus();
+//            }
+//            LOG.info("User authenticated: " + AuthStatus.SUCCESS.equals(authStatus));
+//            LOG.info("Status: " + authStatus);
+//            Assert.assertNotEquals(AuthStatus.LOG_ERROR, authStatus);
+//        } catch (InterruptedException ex) {
+//            LOG.error("Interrupted thread", ex);
         } catch (IOException ex) {
             LOG.error("Error exceting encrypted authentication", ex);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {

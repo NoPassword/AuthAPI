@@ -52,6 +52,20 @@ public final class GenericRequest {
     /**
      * Encrypted generic request to NoPassword API
      *
+     * @param request Authentication request. This request is parsed as a JSON
+     * and encrypted with the provided cipher.
+     * @param cipher Cipher used to encrypt the authentication request.
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     */
+    public GenericRequest(Object request, RSACipher cipher) throws JsonProcessingException {
+        this.rsaCipher = cipher;
+        this.timestamp = Utils.currentTime();
+        setPayload(request);
+    }
+
+    /**
+     * Encrypted generic request to NoPassword API
+     *
      * @param key NoPassword Generic API key.
      * @param request Authentication request. This request is parsed as a JSON
      * and encrypted with the provided cipher.
