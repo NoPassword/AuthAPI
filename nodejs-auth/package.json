@@ -13,6 +13,6 @@
     "dependencies": {
         "ip": "^1.1.5",
         "properties-reader": "0.0.16",
-        "request": "^2.83.0"
+        "request": "^2.88.0"
     }
 }
