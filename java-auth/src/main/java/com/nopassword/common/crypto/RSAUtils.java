@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.security.Key;
@@ -38,23 +39,31 @@ public class RSAUtils {
         }
     }
 
-    public static PublicKey loadPublicKey(Path filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        return loadPublicKey(filename.toString());
+    public static PublicKey loadPublicKey(Path path) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        return loadPublicKey(path.toString());
     }
 
-    public static PublicKey loadPublicKey(String filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        PemReader pemReader = new PemReader(new InputStreamReader(new FileInputStream(new File(filename))));
+    public static PublicKey loadPublicKey(String path) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        return loadPublicKey(new FileInputStream(new File(path)));
+    }
+
+    public static PublicKey loadPublicKey(InputStream input) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        PemReader pemReader = new PemReader(new InputStreamReader(input));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(pemReader.readPemObject().getContent());
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePublic(spec);
     }
 
-    public static PrivateKey loadPrivateKey(Path filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        return loadPrivateKey(filename.toString());
+    public static PrivateKey loadPrivateKey(Path path) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+        return loadPrivateKey(path.toString());
     }
 
-    public static PrivateKey loadPrivateKey(String filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        PemReader pemReader = new PemReader(new InputStreamReader(new FileInputStream(new File(filename))));
+    public static PrivateKey loadPrivateKey(String path) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+        return loadPrivateKey(new FileInputStream(new File(path)));
+    }
+
+    public static PrivateKey loadPrivateKey(InputStream input) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+        PemReader pemReader = new PemReader(new InputStreamReader(input));
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(pemReader.readPemObject().getContent());
         KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
         return kf.generatePrivate(spec);

@@ -58,4 +58,8 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <build>
+        <finalName>nopassword-${artifactId}</finalName>
+    </build>
 </project>
